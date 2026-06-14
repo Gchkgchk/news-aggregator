@@ -102,3 +102,88 @@ function sortAndFilter(news) {
   }
   return result;
 }
+
+const DEEPSEEK_KEY = process.env.DEEPSEEK_API_KEY;
+const DEEPSEEK_BASE = process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com';
+
+function callDeepSeek(messages) {
+  return new Promise((resolve, reject) => {
+    const url = new URL(DEEPSEEK_BASE + '/v1/chat/completions');
+    const body = JSON.stringify({
+      model: 'deepseek-chat',
+      messages: messages,
+      max_tokens: 600,
+      temperature: 0.7,
+    });
+
+    const req = https.request(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${DEEPSEEK_KEY}`,
+      },
+    }, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try {
+          const json = JSON.parse(data);
+          resolve(json.choices[0].message.content);
+        } catch (e) { reject(e); }
+      });
+    });
+    req.on('error', reject);
+    req.write(body);
+    req.end();
+  });
+}
+
+async function analyzeNews(article) {
+  const prompt = `请从以下两个角度深入分析这条新闻（每条分析200-300字）：
+
+【新闻标题】${article.title}
+【来源】${article.source}
+【摘要】${article.description}
+
+1. 第一性原理分析：回归事件最底层的因果关系，剥离表象看本质。
+2. 贝叶斯分析：基于先验概率更新后验判断，评估事件对未来的影响。
+
+请用以下格式回复（只输出JSON）：
+{"firstPrinciples":"第一性原理分析内容","bayesian":"贝叶斯分析内容"}`;
+
+  try {
+    const response = await callDeepSeek([
+      { role: 'user', content: prompt }
+    ]);
+    const parsed = JSON.parse(response);
+    return {
+      firstPrinciples: parsed.firstPrinciples || '分析暂时不可用',
+      bayesian: parsed.bayesian || '分析暂时不可用',
+    };
+  } catch (e) {
+    console.error(`Analysis failed for "${article.title.slice(0, 30)}...":`, e.message);
+    return {
+      firstPrinciples: '分析暂时不可用，请稍后刷新。',
+      bayesian: '分析暂时不可用，请稍后刷新。',
+    };
+  }
+}
+
+async function analyzeAll(newsByCategory) {
+  for (const cat of CATEGORIES) {
+    const items = newsByCategory[cat] || [];
+    for (let i = 0; i < items.length; i++) {
+      console.log(`Analyzing: [${cat}] #${i + 1} ${items[i].title.slice(0, 40)}...`);
+      const analysis = await analyzeNews(items[i]);
+      items[i].firstPrinciples = analysis.firstPrinciples;
+      items[i].bayesian = analysis.bayesian;
+      // 避免请求过快
+      await sleep(1000);
+    }
+  }
+  return newsByCategory;
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
