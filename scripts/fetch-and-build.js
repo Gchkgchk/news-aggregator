@@ -108,7 +108,7 @@ const DEEPSEEK_BASE = process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com
 
 function callDeepSeek(messages) {
   return new Promise((resolve, reject) => {
-    const url = new URL(DEEPSEEK_BASE + '/v1/chat/completions');
+    const url = new URL(DEEPSEEK_BASE.replace(/\/+$/, '') + '/v1/chat/completions');
     const body = JSON.stringify({
       model: 'deepseek-chat',
       messages: messages,
@@ -127,6 +127,10 @@ function callDeepSeek(messages) {
       res.on('data', chunk => data += chunk);
       res.on('end', () => {
         try {
+          if (res.statusCode < 200 || res.statusCode >= 300) {
+            reject(new Error(`DeepSeek API error: ${res.statusCode} ${data.slice(0, 200)}`));
+            return;
+          }
           const json = JSON.parse(data);
           resolve(json.choices[0].message.content);
         } catch (e) { reject(e); }
