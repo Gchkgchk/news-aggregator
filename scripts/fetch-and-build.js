@@ -191,3 +191,78 @@ async function analyzeAll(newsByCategory) {
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+const TEMPLATE_PATH = path.join(__dirname, 'template.html');
+const OUTPUT_PATH = path.join(__dirname, '..', 'index.html');
+
+const CATEGORY_NAMES = {
+  politics: '政治',
+  economy: '经济',
+  finance: '金融',
+  military: '军事',
+  energy: '能源',
+};
+
+function renderHTML(newsByCategory) {
+  const template = fs.readFileSync(TEMPLATE_PATH, 'utf-8');
+
+  let contentHTML = '';
+  for (const cat of CATEGORIES) {
+    const items = newsByCategory[cat] || [];
+    contentHTML += `<section id="${cat}" class="category">\n`;
+    contentHTML += `<h2 class="category-title">${CATEGORY_NAMES[cat]}</h2>\n`;
+
+    for (let i = 0; i < items.length; i++) {
+      const a = items[i];
+      contentHTML += `<div class="news-item">\n`;
+      contentHTML += `  <span class="rank">#${i + 1}</span>\n`;
+      contentHTML += `  <p class="title">${escapeHTML(a.title)}</p>\n`;
+      contentHTML += `  <p class="meta">来源：${escapeHTML(a.source)} · <a href="${escapeHTML(a.url)}" target="_blank" rel="noopener">阅读原文 →</a></p>\n`;
+      contentHTML += `  <div class="analysis">\n`;
+      contentHTML += `    <div class="analysis-box first-principles"><h4>🔍 第一性原理分析</h4><p>${escapeHTML(a.firstPrinciples || '')}</p></div>\n`;
+      contentHTML += `    <div class="analysis-box bayesian"><h4>📊 贝叶斯分析</h4><p>${escapeHTML(a.bayesian || '')}</p></div>\n`;
+      contentHTML += `  </div>\n`;
+      contentHTML += `</div>\n`;
+    }
+    contentHTML += `</section>\n`;
+  }
+
+  const now = new Date();
+  const updateTime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')} (北京时间)`;
+
+  const html = template.replace('{{CONTENT}}', contentHTML).replace('{{UPDATE_TIME}}', updateTime);
+  fs.writeFileSync(OUTPUT_PATH, html, 'utf-8');
+  console.log(`Generated: ${OUTPUT_PATH} (${(html.length / 1024).toFixed(1)} KB)`);
+}
+
+function escapeHTML(str) {
+  return (str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+async function main() {
+  if (!NEWSAPI_KEY) { console.error('Missing NEWSAPI_KEY'); process.exit(1); }
+  if (!DEEPSEEK_KEY) { console.error('Missing DEEPSEEK_API_KEY'); process.exit(1); }
+
+  console.log('=== Step 1: Fetching news ===');
+  const allNews = await fetchAllNews();
+  console.log(`Fetched ${allNews.length} articles`);
+
+  console.log('=== Step 2: Sorting & filtering ===');
+  const sorted = sortAndFilter(allNews);
+  const total = Object.values(sorted).reduce((sum, arr) => sum + arr.length, 0);
+  console.log(`Selected ${total} articles (top 3 per category)`);
+
+  console.log('=== Step 3: AI analysis ===');
+  const analyzed = await analyzeAll(sorted);
+
+  console.log('=== Step 4: Generating HTML ===');
+  renderHTML(analyzed);
+
+  console.log('=== Done ===');
+}
+
+main().catch(e => { console.error(e); process.exit(1); });
