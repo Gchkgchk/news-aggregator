@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>全球新闻深度分析</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f5f5f5;color:#333;line-height:1.6}
+.container{max-width:900px;margin:0 auto;padding:20px}
+header{text-align:center;padding:24px 0;border-bottom:2px solid #e0e0e0;margin-bottom:24px}
+header h1{font-size:24px;margin-bottom:4px}
+header .update-time{font-size:13px;color:#888}
+nav{display:flex;gap:0;margin-bottom:24px;border-radius:8px;overflow:hidden}
+nav a{flex:1;text-align:center;padding:10px 0;text-decoration:none;font-size:14px;font-weight:600;background:#e8e8e8;color:#555;transition:background .2s}
+nav a:hover{background:#d0d0d0}
+.category{margin-bottom:32px}
+.category-title{font-size:20px;font-weight:700;padding-bottom:8px;border-bottom:2px solid #1a1a2e;margin-bottom:16px}
+.news-item{background:#fff;border-radius:8px;padding:20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.news-item .rank{display:inline-block;background:#1a1a2e;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;margin-right:8px}
+.news-item .title{font-size:17px;font-weight:700;margin:8px 0 4px}
+.news-item .meta{font-size:12px;color:#888;margin-bottom:12px}
+.news-item .meta a{color:#1a73e8;text-decoration:none}
+.analysis{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.analysis-box{padding:12px;border-radius:6px;font-size:13px;line-height:1.7}
+.analysis-box.first-principles{background:#fef9f0;border-left:3px solid #e67e22}
+.analysis-box.bayesian{background:#f0f4ff;border-left:3px solid #3498db}
+.analysis-box h4{font-size:13px;margin-bottom:4px}
+footer{text-align:center;padding:24px 0;color:#aaa;font-size:12px;border-top:1px solid #e0e0e0;margin-top:32px}
+@media(max-width:600px){.analysis{grid-template-columns:1fr}nav{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <h1>🌍 全球新闻深度分析</h1>
+  <p class="update-time">更新于 {{UPDATE_TIME}}</p>
+</header>
+<nav>
+  <a href="#politics">政治</a>
+  <a href="#economy">经济</a>
+  <a href="#finance">金融</a>
+  <a href="#military">军事</a>
+  <a href="#energy">能源</a>
+</nav>
+{{CONTENT}}
+<footer>每天北京时间 06:00 自动更新 · 新闻来源：各国主流媒体 · AI 分析仅供参考</footer>
+</div>
+</body>
+</html>
