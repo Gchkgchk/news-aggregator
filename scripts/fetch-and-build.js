@@ -70,3 +70,35 @@ function buildQueries(category) {
   };
   return keywordMap[category] || [category];
 }
+
+function sortAndFilter(news) {
+  const categorized = {};
+  for (const cat of CATEGORIES) {
+    categorized[cat] = [];
+  }
+
+  for (const item of news) {
+    const cat = item.category;
+    if (!categorized[cat]) categorized[cat] = [];
+    item.weight = getSourceWeight(item.sourceId);
+    categorized[cat].push(item);
+  }
+
+  // 每类按权重降序排列，取 TOP 3
+  const result = {};
+  for (const cat of CATEGORIES) {
+    categorized[cat].sort((a, b) => b.weight - a.weight);
+    // 去重（同标题只保留权重最高的）
+    const seen = new Set();
+    const deduped = [];
+    for (const item of categorized[cat]) {
+      const key = item.title.slice(0, 50);
+      if (!seen.has(key)) {
+        seen.add(key);
+        deduped.push(item);
+      }
+    }
+    result[cat] = deduped.slice(0, 3);
+  }
+  return result;
+}
