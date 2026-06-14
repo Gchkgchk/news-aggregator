@@ -204,6 +204,10 @@ const CATEGORY_NAMES = {
 };
 
 function renderHTML(newsByCategory) {
+  if (!fs.existsSync(TEMPLATE_PATH)) {
+    console.error(`Template not found: ${TEMPLATE_PATH}`);
+    process.exit(1);
+  }
   const template = fs.readFileSync(TEMPLATE_PATH, 'utf-8');
 
   let contentHTML = '';
@@ -228,9 +232,10 @@ function renderHTML(newsByCategory) {
   }
 
   const now = new Date();
-  const updateTime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')} (北京时间)`;
+  const bjTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Shanghai' }));
+  const updateTime = `${bjTime.getFullYear()}-${String(bjTime.getMonth() + 1).padStart(2, '0')}-${String(bjTime.getDate()).padStart(2, '0')} ${String(bjTime.getHours()).padStart(2, '0')}:${String(bjTime.getMinutes()).padStart(2, '0')} (北京时间)`;
 
-  const html = template.replace('{{CONTENT}}', contentHTML).replace('{{UPDATE_TIME}}', updateTime);
+  const html = template.replaceAll('{{CONTENT}}', contentHTML).replaceAll('{{UPDATE_TIME}}', updateTime);
   fs.writeFileSync(OUTPUT_PATH, html, 'utf-8');
   console.log(`Generated: ${OUTPUT_PATH} (${(html.length / 1024).toFixed(1)} KB)`);
 }
@@ -240,7 +245,8 @@ function escapeHTML(str) {
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 async function main() {
