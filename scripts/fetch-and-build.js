@@ -4,13 +4,6 @@ const path = require('path');
 
 const NEWSAPI_KEY = process.env.NEWSAPI_KEY;
 const CATEGORIES = ['politics', 'economy', 'finance', 'military', 'energy'];
-const COUNTRIES = [
-  { code: 'cn', name: '中国' },
-  { code: 'us', name: '美国' },
-  { code: 'ru', name: '俄罗斯' },
-  { code: 'eu', name: '欧盟' },
-  { code: 'gb', name: '英国' },
-];
 
 // 来源权威度权重
 const SOURCE_TIERS = {
