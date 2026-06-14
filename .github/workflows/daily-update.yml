@@ -38,7 +38,3 @@ jobs:
             git commit -m "auto: daily news update $(date +%Y-%m-%d)"
             git push
           fi
-
-      - name: Trigger Vercel deploy
-        if: success()
-        run: curl -s -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}" > /dev/null
