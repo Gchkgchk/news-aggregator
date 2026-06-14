@@ -1,0 +1,9 @@
+{
+  "name": "news-aggregator",
+  "version": "1.0.0",
+  "description": "全球新闻深度分析聚合器",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/fetch-and-build.js"
+  }
+}
