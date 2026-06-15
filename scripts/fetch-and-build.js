@@ -33,10 +33,15 @@ function fetchNewsAPI(url) {
 
 async function fetchAllNews() {
   const allNews = [];
+  // 只拉取过去24小时的新闻
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const fromDate = yesterday.toISOString().split('T')[0];
+
   for (const category of CATEGORIES) {
     const queries = buildQueries(category);
     for (const q of queries) {
-      const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(q)}&language=en&sortBy=popularity&pageSize=20&apiKey=${NEWSAPI_KEY}`;
+      const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(q)}&from=${fromDate}&language=en&sortBy=publishedAt&pageSize=20&apiKey=${NEWSAPI_KEY}`;
       try {
         const result = await fetchNewsAPI(url);
         if (result.status === 'ok') {
@@ -143,17 +148,20 @@ function callDeepSeek(messages) {
 }
 
 async function analyzeNews(article) {
-  const prompt = `请从以下两个角度深入分析这条新闻（每条分析200-300字）：
+  const prompt = `请完成以下任务：
+
+1. 将新闻标题翻译成中文（简洁准确）
+2. 从以下两个角度深入分析这条新闻（每条分析200-300字）：
 
 【新闻标题】${article.title}
 【来源】${article.source}
 【摘要】${article.description}
 
-1. 第一性原理分析：回归事件最底层的因果关系，剥离表象看本质。
-2. 贝叶斯分析：基于先验概率更新后验判断，评估事件对未来的影响。
+第一性原理分析：回归事件最底层的因果关系，剥离表象看本质。
+贝叶斯分析：基于先验概率更新后验判断，评估事件对未来的影响。
 
-请用以下格式回复（只输出JSON）：
-{"firstPrinciples":"第一性原理分析内容","bayesian":"贝叶斯分析内容"}`;
+请用以下格式回复（只输出JSON，不要其他内容）：
+{"titleCN":"中文标题","firstPrinciples":"第一性原理分析内容","bayesian":"贝叶斯分析内容"}`;
 
   try {
     const response = await callDeepSeek([
@@ -161,12 +169,14 @@ async function analyzeNews(article) {
     ]);
     const parsed = JSON.parse(response);
     return {
+      titleCN: parsed.titleCN || article.title,
       firstPrinciples: parsed.firstPrinciples || '分析暂时不可用',
       bayesian: parsed.bayesian || '分析暂时不可用',
     };
   } catch (e) {
     console.error(`Analysis failed for "${article.title.slice(0, 30)}...":`, e.message);
     return {
+      titleCN: article.title,
       firstPrinciples: '分析暂时不可用，请稍后刷新。',
       bayesian: '分析暂时不可用，请稍后刷新。',
     };
@@ -179,6 +189,7 @@ async function analyzeAll(newsByCategory) {
     for (let i = 0; i < items.length; i++) {
       console.log(`Analyzing: [${cat}] #${i + 1} ${items[i].title.slice(0, 40)}...`);
       const analysis = await analyzeNews(items[i]);
+      items[i].titleCN = analysis.titleCN;
       items[i].firstPrinciples = analysis.firstPrinciples;
       items[i].bayesian = analysis.bayesian;
       // 避免请求过快
@@ -220,7 +231,8 @@ function renderHTML(newsByCategory) {
       const a = items[i];
       contentHTML += `<div class="news-item">\n`;
       contentHTML += `  <span class="rank">#${i + 1}</span>\n`;
-      contentHTML += `  <p class="title">${escapeHTML(a.title)}</p>\n`;
+      contentHTML += `  <p class="title">${escapeHTML(a.titleCN || a.title)}</p>\n`;
+      contentHTML += `  <p class="meta">原文：${escapeHTML(a.title)}</p>\n`;
       contentHTML += `  <p class="meta">来源：${escapeHTML(a.source)} · <a href="${escapeHTML(a.url)}" target="_blank" rel="noopener">阅读原文 →</a></p>\n`;
       contentHTML += `  <div class="analysis">\n`;
       contentHTML += `    <div class="analysis-box first-principles"><h4>🔍 第一性原理分析</h4><p>${escapeHTML(a.firstPrinciples || '')}</p></div>\n`;
