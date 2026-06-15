@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "skills": {
+    "lishu-serenity": {
+      "name": "lishu-serenity",
+      "version": "1.0.0",
+      "source": "redskill",
+      "install_dir": "/Users/chenkaigong/Documents/test1/skills/lishu-serenity",
+      "installed_at": "1781333221970",
+      "sha256": "901debb94f42996915b56d8454eb69a26374347e3254a33cb41e07f8ee1113d7"
+    }
+  }
+}

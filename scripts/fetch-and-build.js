@@ -33,10 +33,9 @@ function fetchNewsAPI(url) {
 
 async function fetchAllNews() {
   const allNews = [];
-  // 只拉取过去24小时的新闻
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const fromDate = yesterday.toISOString().split('T')[0];
+  // 只拉取当天的新闻
+  const today = new Date();
+  const fromDate = today.toISOString().split('T')[0];
 
   for (const category of CATEGORIES) {
     const queries = buildQueries(category);

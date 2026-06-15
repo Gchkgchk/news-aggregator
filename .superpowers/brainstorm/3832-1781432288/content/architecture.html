@@ -1,0 +1,67 @@
+<h2>系统架构总览</h2>
+<p class="subtitle">方案 A — GitHub Actions 定时生成 + Vercel 静态托管</p>
+
+<div class="section">
+  <div style="background:var(--bg-secondary);border-radius:12px;padding:24px;margin-bottom:16px">
+    <h3 style="margin-top:0">🕐 每天北京时间 06:00 自动触发</h3>
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 0">
+      <div style="background:var(--accent);color:#fff;padding:12px 16px;border-radius:8px;font-weight:600;font-size:14px;flex-shrink:0">GitHub<br>Actions</div>
+      <div style="font-size:24px">→</div>
+      <div style="background:#4A90D9;color:#fff;padding:12px 16px;border-radius:8px;font-weight:600;font-size:14px">Node.js 脚本<br>拉取 + 分析 + 生成</div>
+      <div style="font-size:24px">→</div>
+      <div style="background:#000;color:#fff;padding:12px 16px;border-radius:8px;font-weight:600;font-size:14px">Vercel<br>静态页面</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>📦 Node.js 脚本内部流程</h3>
+  <div style="display:flex;flex-direction:column;gap:8px;font-size:14px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="background:var(--bg-secondary);padding:4px 10px;border-radius:20px;font-size:12px;color:var(--text-secondary)">步骤1</span>
+      <span>NewsAPI 拉取 5 类 × 多国新闻</span>
+      <span style="color:var(--text-secondary);font-size:12px">→ 约 50 条原始数据</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="background:var(--bg-secondary);padding:4px 10px;border-radius:20px;font-size:12px;color:var(--text-secondary)">步骤2</span>
+      <span>按来源权重 + 关键词频次排序</span>
+      <span style="color:var(--text-secondary);font-size:12px">→ 每类取 TOP 3</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="background:var(--bg-secondary);padding:4px 10px;border-radius:20px;font-size:12px;color:var(--text-secondary)">步骤3</span>
+      <span>DeepSeek API 逐一分析 15 条新闻</span>
+      <span style="color:var(--text-secondary);font-size:12px">→ 第一性原理 + 贝叶斯分析</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="background:var(--bg-secondary);padding:4px 10px;border-radius:20px;font-size:12px;color:var(--text-secondary)">步骤4</span>
+      <span>渲染为单个 HTML 文件（内嵌 CSS/JS）</span>
+      <span style="color:var(--text-secondary);font-size:12px">→ 零依赖，浏览器直接打开</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="background:var(--bg-secondary);padding:4px 10px;border-radius:20px;font-size:12px;color:var(--text-secondary)">步骤5</span>
+      <span>自动部署到 Vercel</span>
+      <span style="color:var(--text-secondary);font-size:12px">→ 获取公开链接</span>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>🔑 两个 API 的职责分工</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div style="background:#f5f7fa;border-radius:8px;padding:16px">
+      <h4>NewsAPI</h4>
+      <p style="font-size:13px;color:var(--text-secondary)">负责：找新闻（标题、摘要、来源、URL）</p>
+      <p style="font-size:13px;color:var(--text-secondary)">不消耗 token，纯 HTTP 请求</p>
+    </div>
+    <div style="background:#f0f4ff;border-radius:8px;padding:16px">
+      <h4>DeepSeek API</h4>
+      <p style="font-size:13px;color:var(--text-secondary)">负责：分析新闻（第一性原理 + 贝叶斯）</p>
+      <p style="font-size:13px;color:var(--text-secondary)">每天约 6k-10k token</p>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:16px;padding:16px;background:#fffbe6;border-radius:8px;border-left:3px solid #ffc107">
+  <strong>你需要做的：</strong> 注册 Vercel（用 GitHub 账号）、填两个环境变量。其余代码和配置我全搞定。
+</div>
+</div>

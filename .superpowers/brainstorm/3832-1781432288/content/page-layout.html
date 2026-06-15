@@ -1,0 +1,58 @@
+<h2>网页布局设计</h2>
+<p class="subtitle">一个页面包含所有内容，按类别分区，滚动浏览</p>
+
+<div class="section">
+  <h3>📐 整体结构</h3>
+  <div style="background:var(--bg-secondary);border-radius:12px;padding:20px;font-size:13px">
+
+    <div style="background:#1a1a2e;color:#fff;padding:16px;border-radius:8px 8px 0 0;text-align:center">
+      <strong>页眉</strong> · 标题「全球新闻深度分析」· 更新于 2026-06-14 06:00
+    </div>
+
+    <div style="background:#16213e;color:#ccc;padding:10px 16px;display:flex;gap:16px;font-size:12px">
+      <span style="color:#fff">政治</span>
+      <span>经济</span>
+      <span>金融</span>
+      <span>军事</span>
+      <span>能源</span>
+    </div>
+
+    <div style="background:#f8f9fa;padding:20px;border:1px solid #e0e0e0">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <span style="background:#e74c3c;color:#fff;padding:2px 8px;border-radius:3px;font-size:11px">#1</span>
+        <span style="font-weight:600">新闻标题 — 来源：Reuters</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+        <div style="background:#fff;border:1px solid #e0e0e0;padding:12px;border-radius:6px">
+          <span style="font-weight:600;font-size:12px;color:#e74c3c">🔍 第一性原理分析</span>
+          <p style="font-size:12px;color:#666;margin:4px 0 0">回归事件最底层的因果关系...（200-300字）</p>
+        </div>
+        <div style="background:#fff;border:1px solid #e0e0e0;padding:12px;border-radius:6px">
+          <span style="font-weight:600;font-size:12px;color:#3498db">📊 贝叶斯分析</span>
+          <p style="font-size:12px;color:#666;margin:4px 0 0">基于先验概率更新后验判断...（200-300字）</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:#f0f0f0;color:#999;padding:16px;border-radius:0 0 8px 8px;text-align:center;font-size:12px">
+      页脚 · 每天北京时间 06:00 自动更新
+    </div>
+
+  </div>
+</div>
+
+<div class="section">
+  <h3>📱 在移动端</h3>
+  <div style="background:var(--bg-secondary);border-radius:12px;padding:20px;max-width:360px;margin:0 auto">
+    <div style="text-align:center;font-size:12px;color:#999;margin-bottom:8px">← 360px 宽 →</div>
+    <div style="background:#1a1a2e;color:#fff;padding:10px;border-radius:6px 6px 0 0;text-align:center;font-size:12px">标题</div>
+    <div style="background:#16213e;color:#ccc;padding:6px 10px;font-size:10px;display:flex;gap:8px;overflow-x:auto">政治 · 经济 · 金融 · 军事 · 能源</div>
+    <div style="background:#f8f9fa;padding:12px;border:1px solid #e0e0e0;font-size:11px">
+      <div style="margin-bottom:8px"><strong>TOP 1</strong> 新闻标题</div>
+      <div style="background:#fff;border:1px solid #e0e0e0;padding:8px;border-radius:4px;margin-bottom:6px;font-size:10px"><strong>🔍 第一性原理</strong><br>分析文字...</div>
+      <div style="background:#fff;border:1px solid #e0e0e0;padding:8px;border-radius:4px;font-size:10px"><strong>📊 贝叶斯</strong><br>分析文字...</div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #e0e0e0"><strong>TOP 2</strong> ...</div>
+    </div>
+    <div style="background:#f0f0f0;color:#999;padding:10px;border-radius:0 0 6px 6px;text-align:center;font-size:10px">页脚</div>
+  </div>
+</div>
